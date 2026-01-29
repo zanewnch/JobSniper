@@ -1,0 +1,364 @@
+@import "tailwindcss";
+@source "./index.html";
+
+/* ============================================================
+   THEME — Custom design tokens
+   ============================================================ */
+@theme {
+  --color-glass-bg: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-border-bright: rgba(255, 255, 255, 0.18);
+
+  --color-bg-deep: #0a0a1a;
+  --color-bg-navy: #0f1033;
+  --color-bg-indigo: #1a1145;
+  --color-bg-purple: #1e0a3e;
+
+  --color-accent: #6366f1;
+  --color-accent-light: #818cf8;
+  --color-accent-glow: rgba(99, 102, 241, 0.4);
+
+  --color-status-green: #4ade80;
+  --color-status-yellow: #fbbf24;
+  --color-status-red: #f87171;
+
+  --color-log-success: #4ade80;
+  --color-log-error: #f87171;
+  --color-log-warn: #fbbf24;
+  --color-log-info: #60a5fa;
+  --color-log-header: #f1f5f9;
+  --color-log-default: #94a3b8;
+
+  --font-mono: "Cascadia Code", "Consolas", "Fira Code", ui-monospace, monospace;
+  --font-sans: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, var(--color-bg-deep) 0%, var(--color-bg-navy) 25%, var(--color-bg-indigo) 50%, var(--color-bg-purple) 100%);
+    color: #e2e8f0;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    appearance: none;
+    padding-right: 32px;
+  }
+}
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+@layer components {
+  /* ── Glass Card ── */
+  .glass-card {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 12px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* ── Glass Input ── */
+  .glass-input {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    width: 100%;
+  }
+  .glass-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
+  }
+  .glass-input::placeholder {
+    color: #64748b;
+  }
+
+  /* ── Glass Number Input ── */
+  .glass-number {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #f1f5f9;
+    font-size: 14px;
+    width: 64px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    -moz-appearance: textfield;
+  }
+  .glass-number::-webkit-inner-spin-button,
+  .glass-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .glass-number:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
+  }
+  .glass-number:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* ── Glass Select ── */
+  .glass-select {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #f1f5f9;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .glass-select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
+  }
+  .glass-select option {
+    background: #1e1b4b;
+    color: #f1f5f9;
+  }
+
+  /* ── Buttons ── */
+  .btn-base {
+    padding: 9px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-base:active {
+    transform: scale(0.97);
+  }
+  .btn-base:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-accent), #8b5cf6);
+    color: #fff;
+    box-shadow: 0 0 20px var(--color-accent-glow);
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    background: linear-gradient(135deg, var(--color-accent-light), #a78bfa);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-glass-border);
+    color: #cbd5e1;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-glass-border-bright);
+    color: #f1f5f9;
+  }
+
+  .btn-danger {
+    background: rgba(220, 38, 38, 0.2);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: var(--color-status-red);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: rgba(220, 38, 38, 0.35);
+    border-color: rgba(220, 38, 38, 0.5);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.25);
+  }
+
+  /* ── Status Pill ── */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+
+  /* ── Status Dots (JS-toggled) ── */
+  .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .dot-green {
+    background: var(--color-status-green);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  }
+  .dot-yellow {
+    background: var(--color-status-yellow);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+  }
+  .dot-red {
+    background: var(--color-status-red);
+    box-shadow: 0 0 8px rgba(248, 113, 113, 0.6);
+  }
+
+  /* ── Radio Pill Toggle ── */
+  .radio-group {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .radio-group input[type="radio"] {
+    display: none;
+  }
+  .radio-group label {
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-right: 1px solid var(--color-glass-border);
+    user-select: none;
+  }
+  .radio-group label:last-of-type {
+    border-right: none;
+  }
+  .radio-group label:hover {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .radio-group input[type="radio"]:checked + label {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--color-accent-light);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.15);
+  }
+
+  /* ── Toggle Switch ── */
+  .toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle input {
+    display: none;
+  }
+  .toggle-track {
+    width: 40px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 11px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .toggle-track::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #64748b;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  .toggle input:checked + .toggle-track {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+  .toggle input:checked + .toggle-track::after {
+    left: 20px;
+    background: var(--color-accent-light);
+    box-shadow: 0 0 8px var(--color-accent-glow);
+  }
+  .toggle-label {
+    font-size: 13px;
+    color: #94a3b8;
+    transition: color 0.3s ease;
+  }
+  .toggle input:checked ~ .toggle-label {
+    color: #e2e8f0;
+  }
+
+  /* ── Log Lines (JS-toggled) ── */
+  .line {
+    color: var(--color-log-default);
+    white-space: pre-wrap;
+    word-break: break-all;
+    padding: 1px 0;
+  }
+  .line-success { color: var(--color-log-success); }
+  .line-error { color: var(--color-log-error); }
+  .line-warn { color: var(--color-log-warn); }
+  .line-info { color: var(--color-log-info); }
+  .line-header {
+    color: var(--color-log-header);
+    font-weight: 600;
+  }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+@layer utilities {
+  .scrollbar-glass::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-glass::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-glass::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  .scrollbar-glass::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+}

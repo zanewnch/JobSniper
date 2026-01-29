@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>JobSniper</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+<!-- Background ambient orbs -->
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+  <div class="ambient-orb w-96 h-96 bg-indigo-600 -top-20 -left-20"></div>
+  <div class="ambient-orb w-80 h-80 bg-purple-600 top-1/2 -right-16"></div>
+  <div class="ambient-orb w-64 h-64 bg-blue-600 -bottom-10 left-1/3"></div>
+</div>
+
+<!-- Main container -->
+<div class="flex flex-col h-full p-4 gap-3">
+
+  <!-- Header -->
+  <div class="glass-card px-5 py-4 flex items-center justify-between shrink-0">
+    <div>
+      <h1 class="text-xl font-semibold text-white tracking-wide">JobSniper</h1>
+      <p class="text-xs text-slate-500 mt-0.5">104 Job Automation Tool</p>
+    </div>
+    <div class="status-pill bg-white/5 border border-white/10">
+      <span class="dot dot-yellow" id="statusDot"></span>
+      <span id="statusText" class="text-slate-400">檢查中...</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="glass-card px-5 py-4 shrink-0">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">關鍵字</label>
+        <input type="text" id="keyword" value="project manager" placeholder="搜尋關鍵字" class="glass-input flex-1">
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">執行方式</label>
+        <div class="radio-group">
+          <input type="radio" id="strategySave" name="strategy" value="save">
+          <label for="strategySave">儲存職缺</label>
+          <input type="radio" id="strategyApply" name="strategy" value="apply" checked>
+          <label for="strategyApply">自動投履歷</label>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">頁數</label>
+        <input type="number" id="pageCount" value="3" min="1" max="999" class="glass-number" disabled>
+        <label class="toggle">
+          <input type="checkbox" id="allPages" checked onchange="toggleAllPages()">
+          <span class="toggle-track"></span>
+          <span class="toggle-label">全部</span>
+        </label>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">擬人化</label>
+        <div class="radio-group">
+          <input type="radio" id="humanMinimal" name="humanLike" value="minimal">
+          <label for="humanMinimal">最少</label>
+          <input type="radio" id="humanNormal" name="humanLike" value="normal">
+          <label for="humanNormal">普通</label>
+          <input type="radio" id="humanFull" name="humanLike" value="full" checked>
+          <label for="humanFull">完整 <span class="text-[10px] text-indigo-400">recommended</span></label>
+        </div>
+        <label class="text-xs text-slate-400 min-w-[42px] shrink-0">延遲</label>
+        <div class="radio-group">
+          <input type="radio" id="delay1" name="delayMultiplier" value="1.0">
+          <label for="delay1">1x</label>
+          <input type="radio" id="delay15" name="delayMultiplier" value="1.5">
+          <label for="delay15">1.5x</label>
+          <input type="radio" id="delay2" name="delayMultiplier" value="2.0" checked>
+          <label for="delay2">2x <span class="text-[10px] text-indigo-400">recommended</span></label>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">瀏覽器</label>
+        <label class="toggle">
+          <input type="checkbox" id="showBrowser" checked>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">顯示瀏覽器</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="glass-card px-5 py-3 flex items-center gap-2 shrink-0">
+    <button class="btn-base btn-primary" id="btnStart" onclick="startScraper()">開始執行</button>
+    <button class="btn-base btn-secondary" id="btnLogin" onclick="doLogin()">登入</button>
+    <button class="btn-base btn-secondary" id="btnVerify" onclick="verifyLogin()">驗證登入</button>
+    <button class="btn-base btn-danger" id="btnLogout" onclick="doLogout()">登出</button>
+    <span class="flex-1"></span>
+    <button class="btn-base btn-secondary" onclick="clearLog()">清除 Log</button>
+  </div>
+
+  <!-- Log -->
+  <div class="glass-card flex flex-col flex-1 min-h-0 overflow-hidden">
+    <div class="px-5 py-2.5 text-[11px] text-slate-500 uppercase tracking-widest font-medium border-b border-white/5">
+      Output
+    </div>
+    <div id="log" class="flex-1 overflow-y-auto px-5 py-3 font-mono text-[13px] leading-relaxed scroll-smooth scrollbar-glass"></div>
+  </div>
+
+</div>
+
+<script>
+const logEl = document.getElementById('log');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const btnStart = document.getElementById('btnStart');
+
+// ── Log ──
+function addLog(text) {
+  const div = document.createElement('div');
+  div.className = 'line ' + getLineClass(text);
+  div.textContent = text;
+  logEl.appendChild(div);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function getLineClass(text) {
+  if (text.includes('✓') || text.includes('成功')) return 'line-success';
+  if (text.includes('✗') || text.includes('錯誤') || text.includes('失敗')) return 'line-error';
+  if (text.includes('⚠') || text.includes('跳過') || text.includes('⏭')) return 'line-warn';
+  if (text.includes('===') || text.startsWith('[')) return 'line-header';
+  if (text.includes('正在') || text.includes('設定') || text.includes('使用策略')) return 'line-info';
+  return '';
+}
+
+function clearLog() {
+  logEl.innerHTML = '';
+}
+
+// ── Poll logs ──
+let polling = null;
+
+function startPolling() {
+  if (polling) return;
+  polling = setInterval(async () => {
+    try {
+      const logs = await pywebview.api.poll_logs();
+      if (logs && logs.length > 0) {
+        logs.forEach(addLog);
+      }
+    } catch (e) {}
+  }, 300);
+}
+
+// ── Status ──
+async function refreshStatus() {
+  try {
+    const s = await pywebview.api.get_status();
+    if (s.is_running) {
+      statusDot.className = 'dot dot-green';
+      statusText.textContent = '執行中';
+      btnStart.disabled = true;
+      btnStart.textContent = '執行中...';
+    } else if (s.has_session) {
+      statusDot.className = 'dot dot-green';
+      statusText.textContent = '已有 Session';
+      btnStart.disabled = false;
+      btnStart.textContent = '開始執行';
+    } else {
+      statusDot.className = 'dot dot-red';
+      statusText.textContent = '未登入';
+      btnStart.disabled = false;
+      btnStart.textContent = '開始執行';
+    }
+  } catch (e) {}
+}
+
+// ── Pages toggle ──
+function toggleAllPages() {
+  const allPages = document.getElementById('allPages').checked;
+  const pageInput = document.getElementById('pageCount');
+  pageInput.disabled = allPages;
+}
+
+// ── Actions ──
+async function startScraper() {
+  const keyword = document.getElementById('keyword').value.trim();
+  const allPages = document.getElementById('allPages').checked;
+  const pages = allPages ? 0 : parseInt(document.getElementById('pageCount').value) || 1;
+  const headless = !document.getElementById('showBrowser').checked;
+  const humanLike = document.querySelector('input[name="humanLike"]:checked').value;
+  const delayMultiplier = parseFloat(document.querySelector('input[name="delayMultiplier"]:checked').value);
+  const strategy = document.querySelector('input[name="strategy"]:checked').value;
+
+  if (!keyword) {
+    addLog('請輸入搜尋關鍵字');
+    return;
+  }
+
+  btnStart.disabled = true;
+  btnStart.textContent = '執行中...';
+
+  const result = await pywebview.api.start_scraper(keyword, pages, headless, humanLike, delayMultiplier, strategy);
+  if (!result.success) {
+    addLog('啟動失敗: ' + result.error);
+    btnStart.disabled = false;
+    btnStart.textContent = '開始執行';
+  }
+}
+
+async function doLogin() {
+  addLog('正在開啟登入視窗...');
+  document.getElementById('btnLogin').disabled = true;
+  const result = await pywebview.api.login();
+  document.getElementById('btnLogin').disabled = false;
+  if (result.success) {
+    addLog('登入完成！');
+  } else {
+    addLog('登入失敗: ' + (result.error || ''));
+  }
+  refreshStatus();
+}
+
+async function verifyLogin() {
+  addLog('正在驗證登入狀態...');
+  document.getElementById('btnVerify').disabled = true;
+  const result = await pywebview.api.check_login();
+  document.getElementById('btnVerify').disabled = false;
+  if (result.valid) {
+    addLog('Session 有效，已登入');
+  } else {
+    addLog('Session 無效或已過期，請重新登入');
+  }
+  refreshStatus();
+}
+
+async function doLogout() {
+  const result = await pywebview.api.logout();
+  addLog('已清除 Session');
+  refreshStatus();
+}
+
+// ── Init ──
+window.addEventListener('pywebviewready', () => {
+  startPolling();
+  refreshStatus();
+  // 定期刷新狀態
+  setInterval(refreshStatus, 2000);
+});
+</script>
+</body>
+</html>

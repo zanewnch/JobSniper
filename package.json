@@ -1,0 +1,26 @@
+{
+  "name": "jobsniper",
+  "version": "1.0.0",
+  "description": "104 人力銀行自動化工具 — 自動搜尋職缺、儲存資料、投遞履歷。",
+  "main": "index.js",
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i src/ui/input.css -o src/ui/styles.css --minify",
+    "css:watch": "npx @tailwindcss/cli -i src/ui/input.css -o src/ui/styles.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zanewnch/JobSniper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zanewnch/JobSniper/issues"
+  },
+  "homepage": "https://github.com/zanewnch/JobSniper#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}

@@ -1,0 +1,15 @@
+[project]
+name = "jobsniper"
+version = "1.0.0"
+description = "104 人力銀行自動化工具"
+requires-python = ">=3.11"
+dependencies = [
+    "playwright>=1.40.0",
+    "pandas>=2.0.0",
+    "pywebview>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyinstaller>=6.0.0",
+]

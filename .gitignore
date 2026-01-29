@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Playwright browsers (使用者首次執行時自動下載)
+browsers/
+
+# Output data (執行產出，不進版控)
+output/
+
+# Session (登入憑證，絕對不能公開)
+*.session.json
+output/session.json
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# PyInstaller
+*.exe
+
+# Node (Tailwind CSS build)
+node_modules/
+
+# Environment
+.env
+.python-version
