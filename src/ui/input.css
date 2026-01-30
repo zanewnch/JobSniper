@@ -243,7 +243,8 @@
     border-radius: 8px;
     overflow: hidden;
   }
-  .radio-group input[type="radio"] {
+  .radio-group input[type="radio"],
+  .radio-group input[type="checkbox"] {
     display: none;
   }
   .radio-group label {
@@ -262,7 +263,8 @@
     color: #cbd5e1;
     background: rgba(255, 255, 255, 0.04);
   }
-  .radio-group input[type="radio"]:checked + label {
+  .radio-group input[type="radio"]:checked + label,
+  .radio-group input[type="checkbox"]:checked + label {
     background: rgba(99, 102, 241, 0.2);
     color: var(--color-accent-light);
     border-color: rgba(99, 102, 241, 0.3);

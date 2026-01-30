@@ -75,6 +75,32 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">工作性質</label>
+        <div class="radio-group">
+          <input type="radio" id="jobTypeFull" name="jobType" value="全職" checked>
+          <label for="jobTypeFull">全職</label>
+          <input type="radio" id="jobTypePart" name="jobType" value="兼職">
+          <label for="jobTypePart">兼職</label>
+          <input type="radio" id="jobTypeAll" name="jobType" value="all">
+          <label for="jobTypeAll">全部</label>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">經歷</label>
+        <div class="radio-group">
+          <input type="checkbox" id="exp1" name="experience" value="1年以下" checked>
+          <label for="exp1">1年以下</label>
+          <input type="checkbox" id="exp2" name="experience" value="1-3年" checked>
+          <label for="exp2">1-3年</label>
+          <input type="checkbox" id="exp3" name="experience" value="3-5年">
+          <label for="exp3">3-5年</label>
+          <input type="checkbox" id="exp4" name="experience" value="5-10年">
+          <label for="exp4">5-10年</label>
+          <input type="checkbox" id="exp5" name="experience" value="10年以上">
+          <label for="exp5">10年以上</label>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
         <label class="text-xs text-slate-400 min-w-[56px] shrink-0">瀏覽器</label>
         <label class="toggle">
           <input type="checkbox" id="showBrowser" checked>
@@ -92,6 +118,7 @@
     <button class="btn-base btn-secondary" id="btnVerify" onclick="verifyLogin()">驗證登入</button>
     <button class="btn-base btn-danger" id="btnLogout" onclick="doLogout()">登出</button>
     <span class="flex-1"></span>
+    <button class="btn-base btn-secondary" id="btnCodegen" onclick="openCodegen()" title="開啟 Playwright Codegen 錄製器，可互動式操作網頁並自動產生 selector，方便開發時定位 HTML 元素">Codegen</button>
     <button class="btn-base btn-secondary" onclick="clearLog()">清除 Log</button>
   </div>
 
@@ -187,6 +214,8 @@ async function startScraper() {
   const humanLike = document.querySelector('input[name="humanLike"]:checked').value;
   const delayMultiplier = parseFloat(document.querySelector('input[name="delayMultiplier"]:checked').value);
   const strategy = document.querySelector('input[name="strategy"]:checked').value;
+  const jobType = document.querySelector('input[name="jobType"]:checked').value;
+  const experience = [...document.querySelectorAll('input[name="experience"]:checked')].map(el => el.value);
 
   if (!keyword) {
     addLog('請輸入搜尋關鍵字');
@@ -196,7 +225,7 @@ async function startScraper() {
   btnStart.disabled = true;
   btnStart.textContent = '執行中...';
 
-  const result = await pywebview.api.start_scraper(keyword, pages, headless, humanLike, delayMultiplier, strategy);
+  const result = await pywebview.api.start_scraper(keyword, pages, headless, humanLike, delayMultiplier, strategy, jobType, experience);
   if (!result.success) {
     addLog('啟動失敗: ' + result.error);
     btnStart.disabled = false;
@@ -228,6 +257,18 @@ async function verifyLogin() {
     addLog('Session 無效或已過期，請重新登入');
   }
   refreshStatus();
+}
+
+async function openCodegen() {
+  addLog('正在開啟 Playwright Codegen...');
+  document.getElementById('btnCodegen').disabled = true;
+  const result = await pywebview.api.open_codegen();
+  document.getElementById('btnCodegen').disabled = false;
+  if (result.success) {
+    addLog('✓ Codegen 已啟動（會開啟瀏覽器與錄製視窗）');
+  } else {
+    addLog('✗ Codegen 啟動失敗: ' + (result.error || ''));
+  }
 }
 
 async function doLogout() {

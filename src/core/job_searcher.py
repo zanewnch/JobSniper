@@ -55,7 +55,7 @@ class JobSearcher:
 
             self._close_popups(page)
             self._search_keyword(page, keyword)
-            self._apply_filters(page)
+            self._apply_filters(page, config)
 
             if not handle_captcha_if_detected(page, "套用篩選"):
                 browser.close()
@@ -182,9 +182,14 @@ class JobSearcher:
 
         self._close_popups(page)
 
-    def _apply_filters(self, page: Page) -> None:
-        """套用篩選條件"""
-        filters = DEFAULT_FILTERS
+    def _apply_filters(self, page: Page, config: dict | None = None) -> None:
+        """套用篩選條件（從 config 覆蓋 DEFAULT_FILTERS）"""
+        filters = {**DEFAULT_FILTERS}
+        if config:
+            if 'job_type' in config:
+                filters['job_type'] = config['job_type']
+            if 'experience' in config:
+                filters['experience'] = config['experience']
 
         try:
             # ========== 地區 ==========
@@ -254,16 +259,20 @@ class JobSearcher:
 
             for exp in filters.get("experience", []):
                 try:
-                    page.get_by_role("button", name=exp).click()
+                    page.get_by_role("button").filter(has_text=exp).first.click()
                     random_delay(0.2, 0.4)
                     print(f"  ✓ 經歷: {exp}")
                 except:
+                    print(f"  ⚠ 找不到經歷按鈕: {exp}")
                     pass
 
             job_type = filters.get("job_type", "全職")
-            page.get_by_text(job_type).click()
-            random_delay(0.3, 0.5)
-            print(f"  ✓ 工作性質: {job_type}")
+            if job_type != "all":
+                page.get_by_text(job_type).click()
+                random_delay(0.3, 0.5)
+                print(f"  ✓ 工作性質: {job_type}")
+            else:
+                print(f"  ✓ 工作性質: 全部（不篩選）")
 
             update_time = filters.get("update_time", "一個月內")
             page.get_by_role("button", name=update_time).click()

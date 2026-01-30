@@ -4,9 +4,10 @@ pywebview API Bridge — 前端 JS 透過 window.pywebview.api 呼叫這些方�
 
 from __future__ import annotations
 
+import subprocess
 import threading
 from core import job_searcher, auth_manager
-from config import RUN_CONFIG
+from config import RUN_CONFIG, SESSION_FILE, BASE_URL
 from strategy import JobStrategy, SaveStrategy, ApplyStrategy
 from ui.logger import get_logs
 
@@ -17,6 +18,7 @@ class Api:
     def __init__(self) -> None:
         self._running: bool = False
         self._thread: threading.Thread | None = None
+        self._codegen_proc: subprocess.Popen | None = None
 
     # ── 狀態 ──
 
@@ -47,9 +49,35 @@ class Api:
         auth_manager.clear_session()
         return {'success': True}
 
+    # ── 開發工具 ──
+
+    def open_codegen(self) -> dict[str, bool | str]:
+        """啟動 Playwright Codegen，載入已儲存的 session"""
+        if self._codegen_proc and self._codegen_proc.poll() is None:
+            return {'success': False, 'error': 'Codegen 已在執行中'}
+        try:
+            cmd = ["python", "-m", "playwright", "codegen"]
+            if auth_manager.has_session_file():
+                cmd += [f"--load-storage={SESSION_FILE}"]
+            cmd.append(BASE_URL)
+            self._codegen_proc = subprocess.Popen(cmd)
+            threading.Thread(
+                target=self._wait_codegen,
+                daemon=True,
+            ).start()
+            return {'success': True}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+    def _wait_codegen(self) -> None:
+        """等待 Codegen 結束，通知前端"""
+        self._codegen_proc.wait()
+        self._codegen_proc = None
+        print("Codegen 已關閉")
+
     # ── 爬蟲 ──
 
-    def start_scraper(self, keyword: str, pages: int, headless: bool, human_like: str, delay_multiplier: float, strategy_name: str) -> dict[str, bool | str]:
+    def start_scraper(self, keyword: str, pages: int, headless: bool, human_like: str, delay_multiplier: float, strategy_name: str, job_type: str = '全職', experience: list[str] | None = None) -> dict[str, bool | str]:
         """
         啟動爬蟲（在 background thread 執行）
 
@@ -60,6 +88,8 @@ class Api:
             human_like: 擬人化程度 (minimal / normal / full)
             delay_multiplier: 延遲倍率 (1.0 / 1.5 / 2.0)
             strategy_name: save / apply
+            job_type: 工作性質 (全職 / 兼職 / all)
+            experience: 經歷要求 (e.g. ["1年以下", "1-3年"])
         """
         if self._running:
             return {'success': False, 'error': '爬蟲正在執行中'}
@@ -70,6 +100,8 @@ class Api:
         config['headless'] = headless
         config['human_like'] = human_like
         config['delay_multiplier'] = delay_multiplier
+        config['job_type'] = job_type
+        config['experience'] = experience or []
 
         # 選策略
         strategy = ApplyStrategy() if strategy_name == 'apply' else SaveStrategy()
@@ -95,6 +127,10 @@ class Api:
             print(f"瀏覽器: {'隱藏' if config['headless'] else '顯示'}")
             print(f"人類行為: {config['human_like']}")
             print(f"延遲倍率: {config['delay_multiplier']}x")
+            job_type = config.get('job_type', '全職')
+            print(f"工作性質: {'全部' if job_type == 'all' else job_type}")
+            exp_list = config.get('experience', [])
+            print(f"經歷: {', '.join(exp_list) if exp_list else '不限'}")
 
             jobs = job_searcher.search(
                 keyword,

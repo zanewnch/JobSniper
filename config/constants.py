@@ -2,13 +2,24 @@
 固定常數
 """
 
+import os
+import sys
+
 # 網站設定
 BASE_URL: str = "https://www.104.com.tw/"
 
+
 # 輸出路徑
-OUTPUT_BASE_DIR: str = "C:/Users/user/Documents/GitHub/Experiment/104/output"
-MANUAL_HANDLE_DIR: str = f"{OUTPUT_BASE_DIR}/manual_handle"
-SESSION_FILE: str = f"{OUTPUT_BASE_DIR}/session.json"
+def _get_app_dir() -> str:
+    """取得程式所在目錄（支援 .py 與 PyInstaller .exe）"""
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+OUTPUT_BASE_DIR: str = os.path.join(_get_app_dir(), "output")
+MANUAL_HANDLE_DIR: str = os.path.join(OUTPUT_BASE_DIR, "manual_handle")
+SESSION_FILE: str = os.path.join(OUTPUT_BASE_DIR, "session.json")
 
 # CSV 欄位順序
 CSV_FIELDNAMES: list[str] = [
