@@ -112,7 +112,7 @@ class Api:
             config['remote_work'] = remote_work
         if benefits:
             config['benefits'] = benefits
-        if job_categories:
+        if job_categories is not None:
             config['job_categories'] = job_categories
 
         # 選策略

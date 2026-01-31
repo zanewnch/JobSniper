@@ -41,14 +41,8 @@ DEFAULT_FILTERS: dict[str, str | list[str] | list[int]] = {
     # 地區 (area value: 1=台北市, 2=新北市, ...)
     "area_indices": [1, 2],
 
-    # 職務類別 (多組)
-    "job_categories": [
-        {
-            "main": "行銷／企劃／專案管理類",
-            "sub": "專案／產品管理類人員",
-            "titles": ["專案經理", "產品管理師", "軟體專案管理師", "其他專案管理師", "產品經理"],
-        },
-    ],
+    # 職務類別 (多組, 空 = 不篩選)
+    "job_categories": [],
 
     # 地點距離
     "remote_work": ["完全遠端", "部分遠端"],
