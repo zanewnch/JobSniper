@@ -38,12 +38,23 @@ DELAY: dict[str, tuple[float, float]] = {
 
 # 搜尋篩選條件
 DEFAULT_FILTERS: dict[str, str | list[str] | list[int]] = {
-    # 地區 (nth-child index，會先選第一個二級分類)
-    "area_indices": [3],  # 第 3 個子區域
+    # 地區 (area value: 1=台北市, 2=新北市, ...)
+    "area_indices": [1, 2],
 
-    # 職務類別
-    "job_category": "行銷／企劃／專案管理類",  # 大類名稱
-    "job_category_indices": [5],  # 要勾選的職務位置 (可多選, nth-child index)
+    # 職務類別 (多組)
+    "job_categories": [
+        {
+            "main": "行銷／企劃／專案管理類",
+            "sub": "專案／產品管理類人員",
+            "titles": ["專案經理", "產品管理師", "軟體專案管理師", "其他專案管理師", "產品經理"],
+        },
+    ],
+
+    # 地點距離
+    "remote_work": ["完全遠端", "部分遠端"],
+
+    # 福利制度
+    "benefits": [],
 
     # 工作要求
     "experience": ["1年以下", "1-3年"],

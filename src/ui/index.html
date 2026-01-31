@@ -5,7 +5,7 @@
 <title>JobSniper</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
+<body class="h-screen overflow-y-auto scrollbar-glass">
 
 <!-- Background ambient orbs -->
 <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -15,7 +15,7 @@
 </div>
 
 <!-- Main container -->
-<div class="flex flex-col h-full p-4 gap-3">
+<div class="flex flex-col p-4 gap-3">
 
   <!-- Header -->
   <div class="glass-card px-5 py-4 flex items-center justify-between shrink-0">
@@ -77,20 +77,21 @@
       <div class="flex items-center gap-3">
         <label class="text-xs text-slate-400 min-w-[56px] shrink-0">工作性質</label>
         <div class="radio-group">
-          <input type="radio" id="jobTypeFull" name="jobType" value="全職" checked>
+          <input type="radio" id="jobTypeFull" name="jobType" value="全職">
           <label for="jobTypeFull">全職</label>
           <input type="radio" id="jobTypePart" name="jobType" value="兼職">
           <label for="jobTypePart">兼職</label>
           <input type="radio" id="jobTypeAll" name="jobType" value="all">
           <label for="jobTypeAll">全部</label>
         </div>
+        <span class="hint-required" id="hintJobType">請選擇工作性質</span>
       </div>
       <div class="flex items-center gap-3 flex-wrap">
         <label class="text-xs text-slate-400 min-w-[56px] shrink-0">經歷</label>
-        <div class="radio-group">
-          <input type="checkbox" id="exp1" name="experience" value="1年以下" checked>
+        <div class="chip-group">
+          <input type="checkbox" id="exp1" name="experience" value="1年以下">
           <label for="exp1">1年以下</label>
-          <input type="checkbox" id="exp2" name="experience" value="1-3年" checked>
+          <input type="checkbox" id="exp2" name="experience" value="1-3年">
           <label for="exp2">1-3年</label>
           <input type="checkbox" id="exp3" name="experience" value="3-5年">
           <label for="exp3">3-5年</label>
@@ -98,6 +99,189 @@
           <label for="exp4">5-10年</label>
           <input type="checkbox" id="exp5" name="experience" value="10年以上">
           <label for="exp5">10年以上</label>
+        </div>
+        <span class="hint-required" id="hintExperience">請選擇經歷</span>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0">地點距離</label>
+        <div class="radio-group">
+          <input type="checkbox" id="remoteAll" name="remoteWork" value="完全遠端">
+          <label for="remoteAll">完全遠端</label>
+          <input type="checkbox" id="remotePart" name="remoteWork" value="部分遠端">
+          <label for="remotePart">部分遠端</label>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0 pt-1">福利制度</label>
+        <div class="flex-1 flex flex-col gap-2">
+          <div>
+            <div class="filter-section-title">額外薪水</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben1" name="benefits" value="年終獎金">
+              <label for="ben1">年終獎金</label>
+              <input type="checkbox" id="ben2" name="benefits" value="節日獎金/禮品">
+              <label for="ben2">節日獎金/禮品</label>
+              <input type="checkbox" id="ben3" name="benefits" value="津貼/補助">
+              <label for="ben3">津貼/補助</label>
+              <input type="checkbox" id="ben4" name="benefits" value="分紅配股">
+              <label for="ben4">分紅配股</label>
+              <input type="checkbox" id="ben5" name="benefits" value="空班津貼">
+              <label for="ben5">空班津貼</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">假期</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben6" name="benefits" value="新人假">
+              <label for="ben6">新人假</label>
+              <input type="checkbox" id="ben7" name="benefits" value="生日假">
+              <label for="ben7">生日假</label>
+              <input type="checkbox" id="ben8" name="benefits" value="不扣薪病/事假">
+              <label for="ben8">不扣薪病/事假</label>
+              <input type="checkbox" id="ben9" name="benefits" value="優於勞基法特休">
+              <label for="ben9">優於勞基法特休</label>
+              <input type="checkbox" id="ben10" name="benefits" value="彈性上下班">
+              <label for="ben10">彈性上下班</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">交通</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben11" name="benefits" value="員工宿舍">
+              <label for="ben11">員工宿舍</label>
+              <input type="checkbox" id="ben12" name="benefits" value="交通補助">
+              <label for="ben12">交通補助</label>
+              <input type="checkbox" id="ben13" name="benefits" value="停車位">
+              <label for="ben13">停車位</label>
+              <input type="checkbox" id="ben14" name="benefits" value="交通車">
+              <label for="ben14">交通車</label>
+              <input type="checkbox" id="ben15" name="benefits" value="租房補助">
+              <label for="ben15">租房補助</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">家庭</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben16" name="benefits" value="托嬰中心">
+              <label for="ben16">托嬰中心</label>
+              <input type="checkbox" id="ben17" name="benefits" value="帶寵物上班">
+              <label for="ben17">帶寵物上班</label>
+              <input type="checkbox" id="ben18" name="benefits" value="子女教育獎助學金">
+              <label for="ben18">子女教育獎助學金</label>
+              <input type="checkbox" id="ben19" name="benefits" value="家庭日">
+              <label for="ben19">家庭日</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">樂活</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben20" name="benefits" value="員工旅遊">
+              <label for="ben20">員工旅遊</label>
+              <input type="checkbox" id="ben21" name="benefits" value="免費下午茶">
+              <label for="ben21">免費下午茶</label>
+              <input type="checkbox" id="ben22" name="benefits" value="員工餐廳">
+              <label for="ben22">員工餐廳</label>
+              <input type="checkbox" id="ben23" name="benefits" value="員工優惠">
+              <label for="ben23">員工優惠</label>
+              <input type="checkbox" id="ben24" name="benefits" value="部門聚餐">
+              <label for="ben24">部門聚餐</label>
+              <input type="checkbox" id="ben25" name="benefits" value="社團活動">
+              <label for="ben25">社團活動</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">成長</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben26" name="benefits" value="專業證照獎金">
+              <label for="ben26">專業證照獎金</label>
+              <input type="checkbox" id="ben27" name="benefits" value="進修補助">
+              <label for="ben27">進修補助</label>
+              <input type="checkbox" id="ben28" name="benefits" value="外語學習補助">
+              <label for="ben28">外語學習補助</label>
+            </div>
+          </div>
+          <div>
+            <div class="filter-section-title">健康</div>
+            <div class="chip-group">
+              <input type="checkbox" id="ben29" name="benefits" value="健身器材">
+              <label for="ben29">健身器材</label>
+              <input type="checkbox" id="ben30" name="benefits" value="團體保險">
+              <label for="ben30">團體保險</label>
+              <input type="checkbox" id="ben31" name="benefits" value="健康檢查">
+              <label for="ben31">健康檢查</label>
+              <input type="checkbox" id="ben32" name="benefits" value="生活工作諮詢">
+              <label for="ben32">生活工作諮詢</label>
+              <input type="checkbox" id="ben33" name="benefits" value="員工紓壓按摩">
+              <label for="ben33">員工紓壓按摩</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0 pt-1">職務類別</label>
+        <div class="flex-1 flex flex-col gap-2">
+          <select id="jobCatMainSelect" class="glass-select" onchange="onMainCategoryChange()">
+            <option value="">-- 選擇大類 --</option>
+          </select>
+          <select id="jobCatSubSelect" class="glass-select" onchange="onSubCategoryChange()" disabled>
+            <option value="">-- 選擇中類 --</option>
+          </select>
+          <div id="jobTitleCheckboxes" class="chip-group" style="min-height:0"></div>
+          <div class="flex gap-2 items-center">
+            <button id="btnAddJobCat" class="btn-base btn-secondary text-xs px-3 py-1.5" onclick="addSelectedJobCategories()" style="display:none">+ 加入所選職務</button>
+            <label class="toggle">
+              <input type="checkbox" id="skipJobCat" onchange="toggleSkipJobCategory()">
+              <span class="toggle-track"></span>
+              <span class="toggle-label">不選擇</span>
+            </label>
+            <span class="text-[11px] text-slate-500">實際職缺可能不會設置職務類別</span>
+          </div>
+          <div id="jobCatSelections"></div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <label class="text-xs text-slate-400 min-w-[56px] shrink-0 pt-1">地區</label>
+        <div class="chip-group flex-1">
+          <input type="checkbox" id="area1" name="area" value="1">
+          <label for="area1">台北市</label>
+          <input type="checkbox" id="area2" name="area" value="2">
+          <label for="area2">新北市</label>
+          <input type="checkbox" id="area3" name="area" value="3">
+          <label for="area3">宜蘭縣</label>
+          <input type="checkbox" id="area4" name="area" value="4">
+          <label for="area4">基隆市</label>
+          <input type="checkbox" id="area5" name="area" value="5">
+          <label for="area5">桃園市</label>
+          <input type="checkbox" id="area6" name="area" value="6">
+          <label for="area6">新竹縣市</label>
+          <input type="checkbox" id="area7" name="area" value="7">
+          <label for="area7">苗栗縣</label>
+          <input type="checkbox" id="area8" name="area" value="8">
+          <label for="area8">台中市</label>
+          <input type="checkbox" id="area9" name="area" value="9">
+          <label for="area9">彰化縣</label>
+          <input type="checkbox" id="area10" name="area" value="10">
+          <label for="area10">南投縣</label>
+          <input type="checkbox" id="area11" name="area" value="11">
+          <label for="area11">雲林縣</label>
+          <input type="checkbox" id="area12" name="area" value="12">
+          <label for="area12">嘉義縣市</label>
+          <input type="checkbox" id="area13" name="area" value="13">
+          <label for="area13">台南市</label>
+          <input type="checkbox" id="area14" name="area" value="14">
+          <label for="area14">高雄市</label>
+          <input type="checkbox" id="area15" name="area" value="15">
+          <label for="area15">屏東縣</label>
+          <input type="checkbox" id="area16" name="area" value="16">
+          <label for="area16">台東縣</label>
+          <input type="checkbox" id="area17" name="area" value="17">
+          <label for="area17">花蓮縣</label>
+          <input type="checkbox" id="area18" name="area" value="18">
+          <label for="area18">澎湖縣</label>
+          <input type="checkbox" id="area19" name="area" value="19">
+          <label for="area19">金門縣</label>
+          <input type="checkbox" id="area20" name="area" value="20">
+          <label for="area20">連江縣</label>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -123,7 +307,7 @@
   </div>
 
   <!-- Log -->
-  <div class="glass-card flex flex-col flex-1 min-h-0 overflow-hidden">
+  <div class="glass-card flex flex-col h-80 overflow-hidden">
     <div class="px-5 py-2.5 text-[11px] text-slate-500 uppercase tracking-widest font-medium border-b border-white/5">
       Output
     </div>
@@ -187,12 +371,12 @@ async function refreshStatus() {
     } else if (s.has_session) {
       statusDot.className = 'dot dot-green';
       statusText.textContent = '已有 Session';
-      btnStart.disabled = false;
+      validateForm();
       btnStart.textContent = '開始執行';
     } else {
       statusDot.className = 'dot dot-red';
       statusText.textContent = '未登入';
-      btnStart.disabled = false;
+      validateForm();
       btnStart.textContent = '開始執行';
     }
   } catch (e) {}
@@ -205,8 +389,198 @@ function toggleAllPages() {
   pageInput.disabled = allPages;
 }
 
+// ── Form validation ──
+function validateForm() {
+  const hintJobType = document.getElementById('hintJobType');
+  const hintExperience = document.getElementById('hintExperience');
+
+  const hasJobType = document.querySelector('input[name="jobType"]:checked');
+  const hasExperience = document.querySelector('input[name="experience"]:checked');
+
+  hintJobType.classList.toggle('hidden', !!hasJobType);
+  hintExperience.classList.toggle('hidden', !!hasExperience);
+
+  const valid = hasJobType && hasExperience;
+  btnStart.disabled = !valid;
+  return valid;
+}
+
+// 監聽工作性質和經歷的變更
+document.querySelectorAll('input[name="jobType"], input[name="experience"]').forEach(el => {
+  el.addEventListener('change', validateForm);
+});
+
+// ── 職務類別 (dropdown + checkbox) ──
+const JOB_CATEGORY_TREE = {
+  "行銷／企劃／專案管理類": {
+    "專案／產品管理類人員": [
+      "專案經理", "產品管理師", "軟體專案管理師",
+      "其他專案管理師", "產品經理", "專案管理主管"
+    ]
+  },
+  "資訊軟體系統類": {
+    "軟體／工程類人員": [
+      "後端工程師", "全端工程師"
+    ]
+  }
+};
+
+let jobCategorySelections = [];
+
+function initJobCategoryDropdowns() {
+  const mainSel = document.getElementById('jobCatMainSelect');
+  mainSel.innerHTML = '<option value="">-- 選擇大類 --</option>';
+  for (const key of Object.keys(JOB_CATEGORY_TREE)) {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = key;
+    mainSel.appendChild(opt);
+  }
+}
+
+function onMainCategoryChange() {
+  const mainVal = document.getElementById('jobCatMainSelect').value;
+  const subSel = document.getElementById('jobCatSubSelect');
+  const checkboxArea = document.getElementById('jobTitleCheckboxes');
+  const addBtn = document.getElementById('btnAddJobCat');
+
+  subSel.innerHTML = '<option value="">-- 選擇中類 --</option>';
+  checkboxArea.innerHTML = '';
+  addBtn.style.display = 'none';
+
+  if (!mainVal) {
+    subSel.disabled = true;
+    return;
+  }
+
+  subSel.disabled = false;
+  const subs = JOB_CATEGORY_TREE[mainVal];
+  for (const key of Object.keys(subs)) {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = key;
+    subSel.appendChild(opt);
+  }
+}
+
+function onSubCategoryChange() {
+  const mainVal = document.getElementById('jobCatMainSelect').value;
+  const subVal = document.getElementById('jobCatSubSelect').value;
+  const checkboxArea = document.getElementById('jobTitleCheckboxes');
+  const addBtn = document.getElementById('btnAddJobCat');
+
+  checkboxArea.innerHTML = '';
+  addBtn.style.display = 'none';
+
+  if (!mainVal || !subVal) return;
+
+  const titles = JOB_CATEGORY_TREE[mainVal][subVal] || [];
+  titles.forEach((title, i) => {
+    const id = 'jcTitle_' + i;
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = id;
+    cb.name = 'jobCatTitle';
+    cb.value = title;
+    const lbl = document.createElement('label');
+    lbl.htmlFor = id;
+    lbl.textContent = title;
+    checkboxArea.appendChild(cb);
+    checkboxArea.appendChild(lbl);
+  });
+
+  if (titles.length > 0) addBtn.style.display = '';
+}
+
+function addSelectedJobCategories() {
+  const mainVal = document.getElementById('jobCatMainSelect').value;
+  const subVal = document.getElementById('jobCatSubSelect').value;
+  if (!mainVal || !subVal) return;
+
+  // exit skip mode if user adds categories
+  const skipToggle = document.getElementById('skipJobCat');
+  if (skipToggle.checked) {
+    skipToggle.checked = false;
+  }
+
+  const checked = [...document.querySelectorAll('input[name="jobCatTitle"]:checked')].map(el => el.value);
+  if (checked.length === 0) return;
+
+  // upsert: merge into existing group with same main+sub
+  const existing = jobCategorySelections.find(g => g.main === mainVal && g.sub === subVal);
+  if (existing) {
+    for (const t of checked) {
+      if (!existing.titles.includes(t)) existing.titles.push(t);
+    }
+  } else {
+    jobCategorySelections.push({ main: mainVal, sub: subVal, titles: [...checked] });
+  }
+
+  // reset checkboxes
+  document.querySelectorAll('input[name="jobCatTitle"]:checked').forEach(el => el.checked = false);
+  renderJobCategorySelections();
+}
+
+function renderJobCategorySelections() {
+  const container = document.getElementById('jobCatSelections');
+  if (jobCategorySelections.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = '<div class="filter-section-title" style="margin-top:4px">已選擇:</div>' +
+    jobCategorySelections.map((g, gi) =>
+      '<div style="margin-bottom:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">' +
+        '<span class="text-xs text-slate-500" style="margin-right:2px">' + g.main + ' &gt; ' + g.sub + ' :</span>' +
+        g.titles.map((t, ti) =>
+          '<span class="chip-tag">' + t + '<button onclick="removeJobCatTitle(' + gi + ',' + ti + ')">&times;</button></span>'
+        ).join('') +
+        '<button class="text-xs text-red-400 hover:text-red-300 ml-1" onclick="removeJobCatGroup(' + gi + ')" style="background:none;border:none;cursor:pointer;font-size:11px" title="移除此組">&times; 整組</button>' +
+      '</div>'
+    ).join('');
+}
+
+function removeJobCatTitle(groupIdx, titleIdx) {
+  jobCategorySelections[groupIdx].titles.splice(titleIdx, 1);
+  if (jobCategorySelections[groupIdx].titles.length === 0) {
+    jobCategorySelections.splice(groupIdx, 1);
+  }
+  renderJobCategorySelections();
+}
+
+function removeJobCatGroup(groupIdx) {
+  jobCategorySelections.splice(groupIdx, 1);
+  renderJobCategorySelections();
+}
+
+function toggleSkipJobCategory() {
+  const skip = document.getElementById('skipJobCat').checked;
+  const mainSel = document.getElementById('jobCatMainSelect');
+  const subSel = document.getElementById('jobCatSubSelect');
+  const checkboxArea = document.getElementById('jobTitleCheckboxes');
+  const addBtn = document.getElementById('btnAddJobCat');
+
+  if (skip) {
+    mainSel.disabled = true;
+    subSel.disabled = true;
+    checkboxArea.innerHTML = '';
+    addBtn.style.display = 'none';
+    jobCategorySelections = [];
+    renderJobCategorySelections();
+  } else {
+    mainSel.disabled = false;
+    mainSel.value = '';
+    subSel.innerHTML = '<option value="">-- 選擇中類 --</option>';
+    subSel.disabled = true;
+  }
+}
+
+initJobCategoryDropdowns();
+
 // ── Actions ──
 async function startScraper() {
+  if (!validateForm()) return;
+
   const keyword = document.getElementById('keyword').value.trim();
   const allPages = document.getElementById('allPages').checked;
   const pages = allPages ? 0 : parseInt(document.getElementById('pageCount').value) || 1;
@@ -216,6 +590,12 @@ async function startScraper() {
   const strategy = document.querySelector('input[name="strategy"]:checked').value;
   const jobType = document.querySelector('input[name="jobType"]:checked').value;
   const experience = [...document.querySelectorAll('input[name="experience"]:checked')].map(el => el.value);
+  const areaIndices = [...document.querySelectorAll('input[name="area"]:checked')].map(el => parseInt(el.value));
+  const remoteWork = [...document.querySelectorAll('input[name="remoteWork"]:checked')].map(el => el.value);
+  const benefits = [...document.querySelectorAll('input[name="benefits"]:checked')].map(el => el.value);
+
+  // 職務類別 (多組)
+  const jobCategories = jobCategorySelections.map(g => ({main: g.main, sub: g.sub, titles: [...g.titles]}));
 
   if (!keyword) {
     addLog('請輸入搜尋關鍵字');
@@ -225,10 +605,10 @@ async function startScraper() {
   btnStart.disabled = true;
   btnStart.textContent = '執行中...';
 
-  const result = await pywebview.api.start_scraper(keyword, pages, headless, humanLike, delayMultiplier, strategy, jobType, experience);
+  const result = await pywebview.api.start_scraper(keyword, pages, headless, humanLike, delayMultiplier, strategy, jobType, experience, areaIndices, remoteWork, benefits, jobCategories);
   if (!result.success) {
     addLog('啟動失敗: ' + result.error);
-    btnStart.disabled = false;
+    validateForm();
     btnStart.textContent = '開始執行';
   }
 }
@@ -278,10 +658,12 @@ async function doLogout() {
 }
 
 // ── Init ──
+// 初始驗證（頁面載入時）
+validateForm();
+
 window.addEventListener('pywebviewready', () => {
   startPolling();
   refreshStatus();
-  // 定期刷新狀態
   setInterval(refreshStatus, 2000);
 });
 </script>

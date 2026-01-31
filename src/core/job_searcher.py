@@ -186,28 +186,68 @@ class JobSearcher:
         """套用篩選條件（從 config 覆蓋 DEFAULT_FILTERS）"""
         filters = {**DEFAULT_FILTERS}
         if config:
+            if 'area_indices' in config:
+                filters['area_indices'] = config['area_indices']
             if 'job_type' in config:
                 filters['job_type'] = config['job_type']
             if 'experience' in config:
                 filters['experience'] = config['experience']
+            if 'remote_work' in config:
+                filters['remote_work'] = config['remote_work']
+            if 'benefits' in config:
+                filters['benefits'] = config['benefits']
+            if 'job_categories' in config:
+                filters['job_categories'] = config['job_categories']
+            # 向下相容：舊的單組格式自動轉換
+            elif 'job_cat_main' in config:
+                filters['job_categories'] = [{
+                    'main': config['job_cat_main'],
+                    'sub': config.get('job_cat_sub', ''),
+                    'titles': config.get('job_cat_titles', []),
+                }]
 
         try:
             # ========== 地區 ==========
+            # 地區名稱對照表 (area_value -> 城市名)
+            AREA_NAMES = {
+                1: "台北市", 2: "新北市", 3: "宜蘭縣", 4: "基隆市", 5: "桃園市",
+                6: "新竹縣市", 7: "苗栗縣", 8: "台中市", 9: "彰化縣", 10: "南投縣",
+                11: "雲林縣", 12: "嘉義縣市", 13: "台南市", 14: "高雄市", 15: "屏東縣",
+                16: "台東縣", 17: "花蓮縣", 18: "澎湖縣", 19: "金門縣", 20: "連江縣",
+            }
+
             area_indices = filters.get("area_indices", [])
             if area_indices:
-                print(f"設定地區 (indices: {area_indices})")
+                area_names_str = ", ".join(AREA_NAMES.get(v, str(v)) for v in area_indices)
+                print(f"設定地區: [{area_names_str}]")
                 page.get_by_role("button", name="地區 ").click()
                 random_delay(0.5, 1)
 
-                page.locator(".category-item.category-item--level-two > .category-picker-checkbox > .category-picker-checkbox-input > .checkbox-input").first.check()
-                random_delay(0.2, 0.4)
-                print(f"  ✓ 選擇一級地區")
+                # 104 的地區選單 DOM 結構：
+                # - 台北市 (area=1): 用 .category-item--level-two 的 first checkbox
+                # - 其他城市 (area>=2): 用 .second-floor-rect > li:nth-child(N)
+                #   其中 N = 2 * area_value - 1 (3, 5, 7, 9 ...)
 
-                for idx in area_indices:
-                    selector = f".second-floor-rect > li:nth-child({idx}) > .category-picker-checkbox > .category-picker-checkbox-input > .checkbox-input"
-                    page.locator(selector).check()
-                    random_delay(0.2, 0.4)
-                    print(f"  ✓ 勾選第 {idx} 個區域")
+                taipei_selector = ".category-item.category-item--level-two > .category-picker-checkbox > .category-picker-checkbox-input > .checkbox-input"
+                sub_selector_tpl = ".second-floor-rect > li:nth-child({nth}) > .category-picker-checkbox > .category-picker-checkbox-input > .checkbox-input"
+
+                for i, area_val in enumerate(area_indices):
+                    city = AREA_NAMES.get(area_val, f"區域{area_val}")
+                    try:
+                        if area_val == 1:
+                            locator = page.locator(taipei_selector).first
+                            print(f"  [{i+1}/{len(area_indices)}] 勾選 {city} (level-two first)")
+                        else:
+                            nth = 2 * area_val - 1
+                            locator = page.locator(sub_selector_tpl.format(nth=nth))
+                            print(f"  [{i+1}/{len(area_indices)}] 勾選 {city} (nth-child={nth})")
+
+                        locator.scroll_into_view_if_needed(timeout=3000)
+                        locator.check(timeout=5000)
+                        print(f"  ✓ {city}")
+                    except Exception as e:
+                        print(f"  ✗ {city} 失敗: {e}")
+                    random_delay(0.3, 0.5)
 
                 random_delay(1, 1.5)
 
@@ -215,29 +255,58 @@ class JobSearcher:
                 random_delay(1.5, 2.5)
                 print("  ✓ 地區選擇完成")
 
-            # ========== 職務類別 ==========
-            job_category = filters.get("job_category", "")
-            if job_category:
-                print(f"設定職務類別: {job_category}")
+            # ========== 職務類別 (多組) ==========
+            job_categories = filters.get("job_categories", [])
+
+            for group in job_categories:
+                job_cat_main = group.get("main", "")
+                job_cat_sub = group.get("sub", "")
+                job_cat_titles = group.get("titles", [])
+
+                if not job_cat_main or not job_cat_sub:
+                    continue
+
+                print(f"設定職務類別: {job_cat_main} > {job_cat_sub}")
                 page.get_by_role("button", name="職務類別 ").click()
                 random_delay(0.5, 1)
 
-                page.locator("a").filter(has_text=job_category).click()
+                # 1. 點擊大類 (文字匹配)
+                page.locator("a").filter(has_text=job_cat_main).click()
                 random_delay(0.3, 0.5)
-                print(f"  ✓ 選擇大類: {job_category}")
+                print(f"  ✓ 大類: {job_cat_main}")
 
-                job_indices = filters.get("job_category_indices", [])
-                for idx in job_indices:
-                    selector = f".second-floor-rect > li:nth-child({idx}) > .category-picker-checkbox > .category-picker-checkbox-input > .checkbox-input"
-                    page.locator(selector).check()
-                    random_delay(0.2, 0.4)
-                    print(f"  ✓ 勾選第 {idx} 個職務")
+                # 2. 點擊中類 (文字匹配)
+                page.locator("a").filter(has_text=job_cat_sub).click()
+                random_delay(0.3, 0.5)
+                print(f"  ✓ 中類: {job_cat_sub}")
+
+                # 3. 勾選個別職務
+                # 第一個細項：用 regex 精確匹配 (避免子字串誤選)
+                # 其他細項：has_text 匹配，多個結果時用 .nth(3)
+                for i, title in enumerate(job_cat_titles):
+                    try:
+                        if i == 0:
+                            locator = page.locator("a").filter(has_text=re.compile(f"^{re.escape(title)}$"))
+                            print(f"  [{i+1}/{len(job_cat_titles)}] 勾選 {title} (精確匹配)")
+                            locator.click()
+                        else:
+                            locator = page.locator("a").filter(has_text=title)
+                            count = locator.count()
+                            print(f"  [{i+1}/{len(job_cat_titles)}] 勾選 {title} (匹配 {count} 個)")
+                            if count > 1:
+                                locator.nth(3).click()
+                            else:
+                                locator.click()
+                        random_delay(0.2, 0.4)
+                        print(f"  ✓ {title}")
+                    except Exception as e:
+                        print(f"  ✗ {title} 失敗: {e}")
 
                 random_delay(1, 1.5)
 
-                page.locator("button.category-picker-btn-primary").click()
+                page.get_by_text("確定").click()
                 random_delay(1.5, 2.5)
-                print("  ✓ 職務類別選擇完成")
+                print(f"  ✓ 職務類別選擇完成: {job_cat_main} > {job_cat_sub}")
 
             # ========== 搜尋 ==========
             page.get_by_role("button", name="搜尋").click()
@@ -253,6 +322,32 @@ class JobSearcher:
             page.get_by_role("button", name="40,000 以上", exact=True).click()
             random_delay(0.3, 0.5)
             print(f"  ✓ 薪資: 40,000 以上")
+
+            # ========== 地點距離 ==========
+            remote_work = filters.get("remote_work", [])
+            if remote_work:
+                page.get_by_role("button", name="地點距離").click()
+                random_delay(0.3, 0.5)
+                for rw in remote_work:
+                    try:
+                        page.get_by_role("button", name=rw).click()
+                        random_delay(0.2, 0.4)
+                        print(f"  ✓ 地點距離: {rw}")
+                    except:
+                        print(f"  ⚠ 找不到地點距離按鈕: {rw}")
+
+            # ========== 福利制度 ==========
+            benefits = filters.get("benefits", [])
+            if benefits:
+                page.get_by_role("button", name="福利制度").click()
+                random_delay(0.3, 0.5)
+                for ben in benefits:
+                    try:
+                        page.get_by_role("button", name=ben).click()
+                        random_delay(0.2, 0.4)
+                        print(f"  ✓ 福利: {ben}")
+                    except:
+                        print(f"  ⚠ 找不到福利按鈕: {ben}")
 
             page.get_by_role("button", name="工作要求").click()
             random_delay(0.3, 0.5)

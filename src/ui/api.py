@@ -77,7 +77,7 @@ class Api:
 
     # ── 爬蟲 ──
 
-    def start_scraper(self, keyword: str, pages: int, headless: bool, human_like: str, delay_multiplier: float, strategy_name: str, job_type: str = '全職', experience: list[str] | None = None) -> dict[str, bool | str]:
+    def start_scraper(self, keyword: str, pages: int, headless: bool, human_like: str, delay_multiplier: float, strategy_name: str, job_type: str = '全職', experience: list[str] | None = None, area_indices: list[int] | None = None, remote_work: list[str] | None = None, benefits: list[str] | None = None, job_categories: list[dict] | None = None) -> dict[str, bool | str]:
         """
         啟動爬蟲（在 background thread 執行）
 
@@ -90,6 +90,10 @@ class Api:
             strategy_name: save / apply
             job_type: 工作性質 (全職 / 兼職 / all)
             experience: 經歷要求 (e.g. ["1年以下", "1-3年"])
+            area_indices: 地區 area values (e.g. [1, 2, 5])
+            remote_work: 地點距離 (e.g. ["完全遠端", "部分遠端"])
+            benefits: 福利制度 (e.g. ["年終獎金", "彈性上下班"])
+            job_categories: 職務類別 (多組, e.g. [{"main": "...", "sub": "...", "titles": [...]}])
         """
         if self._running:
             return {'success': False, 'error': '爬蟲正在執行中'}
@@ -102,6 +106,14 @@ class Api:
         config['delay_multiplier'] = delay_multiplier
         config['job_type'] = job_type
         config['experience'] = experience or []
+        if area_indices:
+            config['area_indices'] = area_indices
+        if remote_work:
+            config['remote_work'] = remote_work
+        if benefits:
+            config['benefits'] = benefits
+        if job_categories:
+            config['job_categories'] = job_categories
 
         # 選策略
         strategy = ApplyStrategy() if strategy_name == 'apply' else SaveStrategy()
@@ -131,6 +143,12 @@ class Api:
             print(f"工作性質: {'全部' if job_type == 'all' else job_type}")
             exp_list = config.get('experience', [])
             print(f"經歷: {', '.join(exp_list) if exp_list else '不限'}")
+            area_list = config.get('area_indices', [])
+            print(f"地區子區域: {area_list if area_list else '預設'}")
+            remote_list = config.get('remote_work', [])
+            print(f"地點距離: {', '.join(remote_list) if remote_list else '不限'}")
+            ben_list = config.get('benefits', [])
+            print(f"福利制度: {', '.join(ben_list) if ben_list else '不限'}")
 
             jobs = job_searcher.search(
                 keyword,
